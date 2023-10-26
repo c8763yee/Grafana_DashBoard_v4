@@ -35,6 +35,14 @@ client = MQTT.Client()
 task = BackgroundScheduler(timezone="Asia/Taipei")
 
 # Data Temporary Storage
+global front_door
+global back_door
+global first_meeting_room
+global second_meeting_room
+global power_box
+global dl303
+global server_room
+global air_condiction
 front_door = {}
 back_door = {}
 first_meeting_room = {}
@@ -63,7 +71,7 @@ def add_front_door(data):
                 fan3 = data["fan_0"],
                 fan4 = data["fan_1"]
             ))
-        front_door = {}
+        front_door.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -81,7 +89,7 @@ def add_back_door(data):
                 fan1 = data["fan_0"],
                 fan2 = data["fan_1"]
             ))
-        back_door = {}
+        back_door.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -97,7 +105,7 @@ def add_first_meeting_room(data):
                 co2 = data["CO2"] / 3.5,
                 tvoc = data["TVOC"]
             ))
-        first_meeting_room = {}
+        first_meeting_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -113,7 +121,7 @@ def add_second_meeting_room(data):
                 co2 = data["CO2"] / 3.5,
                 tvoc = data["TVOC"]
             ))
-        second_meeting_room = {}
+        second_meeting_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -132,7 +140,7 @@ def add_power_box(data):
                 out_c = data['OUT_C'],
                 out_d = data['OUT_D']
             ))
-        power_box = {}
+        power_box.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -148,7 +156,7 @@ def add_dl303(data):
                 dew_point = data["DewPointC"],
                 co2 = data["CO2"]
             ))
-        dl303 = {}
+        dl303.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -162,7 +170,7 @@ def add_server_room(data):
                 temp = data["Temperature"],
                 humi = data["Humidity"]
             ))
-        server_room = {}
+        server_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -175,7 +183,7 @@ def add_air_condiction(data):
                 timestamp = time(),
                 status = data["Status"]
             ))
-        air_condiction = {}
+        air_condiction.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -233,10 +241,10 @@ def on_message(client, userdata, msg):
         dl303["Humidity"] = data.get("Humidity")
         dl303["DewPointC"] = data.get("DewPointC")
         dl303["CO2"] = data.get("CO2")
-    elif msg.topic == "2706/AirCondiction/A":
+    elif msg.topic == "2706/Air_Condiction/A":
         server_room["Temperature"] = data.get("Temperature")
         server_room["Humidity"] = data.get("Humidity")
-    elif msg.topic == "2706/AirCondiction/A/switch":
+    elif msg.topic == "2706/Air_Condiction/A/switch":
         air_condiction["Status"] = data.get("Status")
 
 
