@@ -9,12 +9,13 @@ from paho.mqtt import client as MQTT
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import (
-    FrontDoor2706, BackDoor2706, FirstMeetingRoomFun, FirstMeetingRoom, SecondMeetingRoom, 
+from db_models import (
+    FrontDoor2706, BackDoor2706, FirstMeetingRoomFun, FirstMeetingRoom, SecondMeetingRoom,
     PowerBox220V, ServerRoom, AirConditioner, DL303
 )
-
-
+from data_models import (FrontDoorFanModel, BackDoorFanModel, FirstMeetingRoomFanModel,
+                         FirstMeetingRoomModel, SecondMeetingRoomModel, PowerBoxModel, ServerRoomModel,
+                         AirConditionerModel, DL303Model)
 # Timezone setting
 tz_delta = datetime.timedelta(hours=0)
 tz = datetime.timezone(tz_delta)
@@ -56,18 +57,19 @@ def add_front_door(data):
     try:
         with Session.begin() as session:
             session.add(FrontDoor2706(
-                timestamp = time(),
-                temp = data["Temperature"],
-                humi = data["Humidity"],
-                co2 = data["CO2"],
-                tvoc = data["TVOC"],
-                fan3 = data["fan_0"],
-                fan4 = data["fan_1"]
+                timestamp=time(),
+                temp=data["Temperature"],
+                humi=data["Humidity"],
+                co2=data["CO2"],
+                tvoc=data["TVOC"],
+                fan3=data["fan_0"],
+                fan4=data["fan_1"]
             ))
         global front_door
         front_door.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_back_door(data):
@@ -75,18 +77,19 @@ def add_back_door(data):
     try:
         with Session.begin() as session:
             session.add(BackDoor2706(
-                timestamp = time(),
-                temp = data["Temperature"],
-                humi = data["Humidity"],
-                co2 = data["CO2"],
-                tvoc = data["TVOC"],
-                fan1 = data["fan_0"],
-                fan2 = data["fan_1"]
+                timestamp=time(),
+                temp=data["Temperature"],
+                humi=data["Humidity"],
+                co2=data["CO2"],
+                tvoc=data["TVOC"],
+                fan1=data["fan_0"],
+                fan2=data["fan_1"]
             ))
         global back_door
         back_door.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_first_meeting_room_fun(data):
@@ -94,13 +97,14 @@ def add_first_meeting_room_fun(data):
     try:
         with Session.begin() as session:
             session.add(FirstMeetingRoomFun(
-                timestamp = time(),
-                fan0 = data["fan_0"]
+                timestamp=time(),
+                fan0=data["fan_0"]
             ))
         global first_meeting_room_fun
         first_meeting_room_fun.clear()
     except Exception as e:
-        print("ERROR:", e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_first_meeting_room(data):
@@ -108,16 +112,17 @@ def add_first_meeting_room(data):
     try:
         with Session.begin() as session:
             session.add(FirstMeetingRoom(
-                timestamp = time(),
-                temp = data["Temperature"],
-                humi = data["Humidity"],
-                co2 = data["CO2"] / 3.5,
-                tvoc = data["TVOC"]
+                timestamp=time(),
+                temp=data["Temperature"],
+                humi=data["Humidity"],
+                co2=data["CO2"] / 3.5,
+                tvoc=data["TVOC"]
             ))
         global first_meeting_room
         first_meeting_room.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_second_meeting_room(data):
@@ -125,16 +130,17 @@ def add_second_meeting_room(data):
     try:
         with Session.begin() as session:
             session.add(SecondMeetingRoom(
-                timestamp = time(),
-                temp = data["Temperature"],
-                humi = data["Humidity"],
-                co2 = data["CO2"] / 3.5,
-                tvoc = data["TVOC"]
+                timestamp=time(),
+                temp=data["Temperature"],
+                humi=data["Humidity"],
+                co2=data["CO2"] / 3.5,
+                tvoc=data["TVOC"]
             ))
         global second_meeting_room
         second_meeting_room.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_power_box(data):
@@ -142,20 +148,21 @@ def add_power_box(data):
     try:
         with Session.begin() as session:
             session.add(PowerBox220V(
-                timestamp = time(),
-                in_a = data['IN_A'],
-                in_b = data['IN_B'],
-                in_c = data['IN_C'],
-                in_avg = data['IN_Avg'],
-                kw_a = data['kW_A'],
-                kw_b = data['kW_B'],
-                kw_c = data['kW_C'],
-                kw_tot = data['kW_tot']
+                timestamp=time(),
+                in_a=data['IN_A'],
+                in_b=data['IN_B'],
+                in_c=data['IN_C'],
+                in_avg=data['IN_Avg'],
+                kw_a=data['kW_A'],
+                kw_b=data['kW_B'],
+                kw_c=data['kW_C'],
+                kw_tot=data['kW_tot']
             ))
         global power_box
         power_box.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_dl303(data):
@@ -163,16 +170,17 @@ def add_dl303(data):
     try:
         with Session.begin() as session:
             session.add(DL303(
-                timestamp = time(),
-                temp = data["TemperatureC"],
-                humi = data["Humidity"],
-                dew_point = data["DewPointC"],
-                co2 = data["CO2"]
+                timestamp=time(),
+                temp=data["TemperatureC"],
+                humi=data["Humidity"],
+                dew_point=data["DewPointC"],
+                co2=data["CO2"]
             ))
         global dl303
         dl303.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_server_room(data):
@@ -180,14 +188,15 @@ def add_server_room(data):
     try:
         with Session.begin() as session:
             session.add(ServerRoom(
-                timestamp = time(),
-                temp = data["Temperature"],
-                humi = data["Humidity"]
+                timestamp=time(),
+                temp=data["Temperature"],
+                humi=data["Humidity"]
             ))
         global server_room
         server_room.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 def add_air_condiction(data):
@@ -195,13 +204,14 @@ def add_air_condiction(data):
     try:
         with Session.begin() as session:
             session.add(AirConditioner(
-                timestamp = time(),
-                status = data["Status"]
+                timestamp=time(),
+                status=data["Status"]
             ))
         global air_condiction
         air_condiction.clear()
     except Exception as e:
-        print('ERROR:', e)
+        error_message = f'{e.__class__.__name__}: {e}'
+        print(f'error occured: {error_message}')
 
 
 # MQTT connect
@@ -215,56 +225,34 @@ def on_connect(client, userdata, flags, rresult):
 # MQTT message
 @client.message_callback()
 def on_message(client, userdata, msg):
+    global front_door, back_door, first_meeting_room_fun, first_meeting_room
+    global second_meeting_room, power_box, dl303, server_room, air_condiction
     try:
         data = json.loads(msg.payload.decode('utf-8'))
-    except: 
+    except:
         data = {}
-    # print(f"{msg.topic} - {data}")
+    # print(f"{msg.topic} - {json.dumps(data, ensure_ascii=False, indent=2)}")
+
+    # looks like use dict to store and change global variable is not working
     if msg.topic == "2706/IAQ/2":
-        front_door["Temperature"] = data.get("Temperature")
-        front_door["Humidity"] = data.get("Humidity")
-        front_door["CO2"] = data.get("CO2")
-        front_door["TVOC"] = data.get("TVOC")
-        front_door["fan_0"] = data.get("fan_0")
-        front_door["fan_1"] = data.get("fan_1")
+        front_door.update(FrontDoorFanModel(**data).model_dump())
     elif msg.topic == "2706/IAQ/1":
-        back_door["Temperature"] = data.get("Temperature")
-        back_door["Humidity"] = data.get("Humidity")
-        back_door["CO2"] = data.get("CO2")
-        back_door["TVOC"] = data.get("TVOC")
-        back_door["fan_0"] = data.get("fan_0")
-        back_door["fan_1"] = data.get("fan_1")
+        back_door.update(BackDoorFanModel(**data).model_dump())
     elif msg.topic == "2706/IAQ/3":
-        first_meeting_room_fun["fan_0"] = data.get("fan_0")
+        first_meeting_room_fun.update(
+            FirstMeetingRoomFanModel(**data).model_dump())
     elif msg.topic == "2706/MeetingRoom/1":
-        first_meeting_room["Temperature"] = data.get("Temperature")
-        first_meeting_room["Humidity"] = data.get("Humidity")
-        first_meeting_room["CO2"] = data.get("CO2")
-        first_meeting_room["TVOC"] = data.get("TVOC")
+        first_meeting_room.update(FirstMeetingRoomModel(**data).model_dump())
     elif msg.topic == "2706/MeetingRoom/2":
-        second_meeting_room["Temperature"] = data.get("Temperature")
-        second_meeting_room["Humidity"] = data.get("Humidity")
-        second_meeting_room["CO2"] = data.get("CO2")
-        second_meeting_room["TVOC"] = data.get("TVOC")
+        second_meeting_room.update(SecondMeetingRoomModel(**data).model_dump())
     elif msg.topic == "2706/PowerBox":
-        power_box["IN_A"] = data.get("IN_A")
-        power_box["IN_B"] = data.get("IN_B")
-        power_box["IN_C"] = data.get("IN_C")
-        power_box["IN_Avg"] = data.get("IN_Avg")
-        power_box["kW_A"] = (data.get("IN_A") / 1.732) * 220 / 1000
-        power_box["kW_B"] = (data.get("IN_B") / 1.732) * 220 / 1000
-        power_box["kW_C"] = (data.get("IN_C") / 1.732) * 220 / 1000
-        power_box["kW_tot"] =  power_box["kW_A"] + power_box["kW_B"] + power_box["kW_C"]
+        power_box.update(PowerBoxModel(**data).model_dump())
     elif msg.topic == "DL303/Info":
-        dl303["TemperatureC"] = data.get("TemperatureC")
-        dl303["Humidity"] = data.get("Humidity")
-        dl303["DewPointC"] = data.get("DewPointC")
-        dl303["CO2"] = data.get("CO2")
+        dl303.update(DL303Model(**data).model_dump())
     elif msg.topic == "2706/Air_Condiction/A":
-        server_room["Temperature"] = data.get("Temperature")
-        server_room["Humidity"] = data.get("Humidity")
+        server_room.update(ServerRoomModel(**data).model_dump())
     elif msg.topic == "2706/Air_Condiction/A/switch":
-        air_condiction["Status"] = data.get("Status")
+        air_condiction.update(AirConditionerModel(**data).model_dump())
 
 
 if __name__ == "__main__":
@@ -272,12 +260,16 @@ if __name__ == "__main__":
                    int(os.environ.get("MQTT_PORT")))
     task.add_job(add_front_door, 'interval', seconds=10, args=[front_door])
     task.add_job(add_back_door, 'interval', seconds=10, args=[back_door])
-    task.add_job(add_first_meeting_room_fun, 'interval', seconds=10, args=[first_meeting_room_fun])
-    task.add_job(add_first_meeting_room, 'interval', seconds=10, args=[first_meeting_room])
-    task.add_job(add_second_meeting_room, 'interval', seconds=10, args=[second_meeting_room])
+    task.add_job(add_first_meeting_room_fun, 'interval',
+                 seconds=10, args=[first_meeting_room_fun])
+    task.add_job(add_first_meeting_room, 'interval',
+                 seconds=10, args=[first_meeting_room])
+    task.add_job(add_second_meeting_room, 'interval',
+                 seconds=10, args=[second_meeting_room])
     task.add_job(add_power_box, 'interval', seconds=10, args=[power_box])
     task.add_job(add_dl303, 'interval', seconds=10, args=[dl303])
     task.add_job(add_server_room, 'interval', seconds=10, args=[server_room])
-    task.add_job(add_air_condiction, 'interval', seconds=10, args=[air_condiction])
+    task.add_job(add_air_condiction, 'interval',
+                 seconds=10, args=[air_condiction])
     task.start()
     client.loop_forever()
