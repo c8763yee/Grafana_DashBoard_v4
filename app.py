@@ -9,11 +9,11 @@ from paho.mqtt import client as MQTT
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db_models import (
+from models import (
     FrontDoor2706, BackDoor2706, FirstMeetingRoomFun, FirstMeetingRoom, SecondMeetingRoom,
     PowerBox220V, ServerRoom, AirConditioner, DL303
 )
-from data_models import (FrontDoorFanModel, BackDoorFanModel, FirstMeetingRoomFanModel,
+from schema import (FrontDoorFanModel, BackDoorFanModel, FirstMeetingRoomFanModel,
                          FirstMeetingRoomModel, SecondMeetingRoomModel, PowerBoxModel, ServerRoomModel,
                          AirConditionerModel, DL303Model)
 # Timezone setting
