@@ -94,6 +94,11 @@ class DL303(BaseTable, Base):
     co2 = Column(Float(6, 2), nullable=False)
 
 
+class ACSwitchLog(BaseTable, Base): # 前門冷氣狀態
+    __tablename__ = "ACSwitchLog"
+    status = Column(Boolean, nullable=False)
+
+
 # TGBOT Model
 class RotationUser(BaseTable, Base):
     __tablename__ = "RotationUser"
@@ -113,6 +118,7 @@ class DailyReport(BaseTable, Base):
     WD = Column(String(40), nullable=False)
     WS = Column(Float, nullable=False)
     WeatherDescription = Column(String(255), nullable=False)
+
 
 # Currently, below models are not used(WIP)
 
