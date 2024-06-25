@@ -49,6 +49,11 @@ class BackDoor2706(BaseTable, Base):  # 後門風扇
     tvoc = Column(Float(6, 2), nullable=False)
     fan1 = Column(String(40), nullable=False)
     fan2 = Column(String(40), nullable=False)
+
+
+class FirstMeetingRoomFun(BaseTable, Base):
+    __tablename__ = "FirstMeetingRoomFun"
+    fan0 = Column(String(40), nullable=False)
     
 
 class FirstMeetingRoom(BaseTable, Base):  # 第一會議室
@@ -72,20 +77,26 @@ class PowerBox220V(BaseTable, Base):  # Power Box 220V
     in_a = Column(Float(5, 2), nullable=False)
     in_b = Column(Float(5, 2), nullable=False)
     in_c = Column(Float(5, 2), nullable=False)
-    out_a = Column(Float(5, 2), nullable=False)
-    out_b = Column(Float(5, 2), nullable=False)
-    out_c = Column(Float(5, 2), nullable=False)
-    out_d = Column(Float(5, 2), nullable=False)
+    in_avg = Column(Float(5, 2), nullable=False)
+    kw_a = Column(Float(5, 2), nullable=False)
+    kw_b = Column(Float(5, 2), nullable=False)
+    kw_c = Column(Float(5, 2), nullable=False)
+    kw_tot = Column(Float(5, 2), nullable=False)
     
 
 class ServerRoom(BaseTable, Base):  # 機房
     __tablename__ = "ServerRoom"
     temp = Column(Float(5, 2), nullable=False)
     humi = Column(Float(5, 2), nullable=False)
-    
+
 
 class AirConditioner(BaseTable, Base):  # 冷氣狀態
     __tablename__ = "AirConditioner"
+    status = Column(Boolean, nullable=False)
+
+
+class ACSwitchLog(BaseTable, Base):  # 冷氣狀態Log
+    __tablename__ = "ACSwitchLog"
     status = Column(Boolean, nullable=False)
     
 
@@ -126,18 +137,6 @@ class DailyReport(BaseTable, Base):
 #     SW6 = Column(Boolean, nullable=False)
 #     SW7 = Column(Boolean, nullable=False)
 #     SW8 = Column(Boolean, nullable=False)
-
-
-# class AirCondictionA(BaseTable, Base):  # 冷氣A
-#     __tablename__ = "Air_Condiction_A"
-#     Temp = Column(Float(5, 2), nullable=False)
-#     Humi = Column(Float(5, 2), nullable=False)
-
-
-# class AirCondictionB(BaseTable, Base):  # 冷氣B
-#     __tablename__ = "Air_Condiction_B"
-#     Temp = Column(Float(5, 2), nullable=False)
-#     Humi = Column(Float(5, 2), nullable=False)
 
 
 # class UPSA(BaseTable, Base):  # UPS A
@@ -194,42 +193,6 @@ class DailyReport(BaseTable, Base):
 #     Battery_Next_Change_Year = Column(Integer, nullable=False)
 #     Battery_Next_Change_Mon = Column(Integer, nullable=False)
 #     Battery_Next_Change_Day = Column(Integer, nullable=False)
-
-
-# class PowerBoxA(BaseTable, Base):  # Power Box A
-#     __tablename__ = "Power_Box"
-#     In_A = Column(Float(5, 2), nullable=False)
-#     In_B = Column(Float(5, 2), nullable=False)
-#     Out_A = Column(Float(5, 2), nullable=False)
-#     Out_B = Column(Float(5, 2), nullable=False)
-#     Out_C = Column(Float(5, 2), nullable=False)
-#     Out_D = Column(Float(5, 2), nullable=False)
-#     Out_E = Column(Float(5, 2), nullable=False)
-
-
-# class PowerBoxB(BaseTable, Base):  # Power Box B
-#     __tablename__ = "Power_Box_B"
-#     In_A = Column(Float(5, 2), nullable=False)
-#     In_B = Column(Float(5, 2), nullable=False)
-#     Out_A = Column(Float(5, 2), nullable=False)
-#     Out_B = Column(Float(5, 2), nullable=False)
-#     Out_C = Column(Float(5, 2), nullable=False)
-#     Out_D = Column(Float(5, 2), nullable=False)
-#     Out_E = Column(Float(5, 2), nullable=False)
-
-
-# class PowerMeter(BaseTable, Base):  # 變電箱 功率
-#     __tablename__ = "Power_Meter"
-#     Temp = Column(Float(5, 2), nullable=False)
-#     Humi = Column(Float(5, 2), nullable=False)
-#     Current = Column(Float(5, 2), nullable=False)
-#     Current_A = Column(Float(5, 2), nullable=False)
-#     Current_B = Column(Float(5, 2), nullable=False)
-
-
-# class WaterTank(BaseTable, Base):  # 水塔 功率
-#     __tablename__ = "Water_Tank"
-#     Current = Column(Float(5, 2), nullable=False)
 
 
 if __name__ == "__main__":

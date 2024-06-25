@@ -10,8 +10,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import (
-    FrontDoor2706, BackDoor2706, FirstMeetingRoom, SecondMeetingRoom, 
-    PowerBox220V, ServerRoom, AirConditioner, DL303
+    FrontDoor2706, BackDoor2706, FirstMeetingRoomFun, FirstMeetingRoom, SecondMeetingRoom, 
+    PowerBox220V, ServerRoom, AirConditioner, ACSwitchLog, DL303
 )
 
 
@@ -37,6 +37,7 @@ task = BackgroundScheduler(timezone="Asia/Taipei")
 # Data Temporary Storage
 front_door = {}
 back_door = {}
+first_meeting_room_fun = {}
 first_meeting_room = {}
 second_meeting_room = {}
 power_box = {}
@@ -63,7 +64,8 @@ def add_front_door(data):
                 fan3 = data["fan_0"],
                 fan4 = data["fan_1"]
             ))
-        front_door = {}
+        global front_door
+        front_door.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -81,9 +83,24 @@ def add_back_door(data):
                 fan1 = data["fan_0"],
                 fan2 = data["fan_1"]
             ))
-        back_door = {}
+        global back_door
+        back_door.clear()
     except Exception as e:
         print('ERROR:', e)
+
+
+def add_first_meeting_room_fun(data):
+    print("First Meeting Room Fun: ", data)
+    try:
+        with Session.begin() as session:
+            session.add(FirstMeetingRoomFun(
+                timestamp = time(),
+                fan0 = data["fan_0"]
+            ))
+        global first_meeting_room_fun
+        first_meeting_room_fun.clear()
+    except Exception as e:
+        print("ERROR:", e)
 
 
 def add_first_meeting_room(data):
@@ -97,7 +114,8 @@ def add_first_meeting_room(data):
                 co2 = data["CO2"] / 3.5,
                 tvoc = data["TVOC"]
             ))
-        first_meeting_room = {}
+        global first_meeting_room
+        first_meeting_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -113,7 +131,8 @@ def add_second_meeting_room(data):
                 co2 = data["CO2"] / 3.5,
                 tvoc = data["TVOC"]
             ))
-        second_meeting_room = {}
+        global second_meeting_room
+        second_meeting_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -127,12 +146,14 @@ def add_power_box(data):
                 in_a = data['IN_A'],
                 in_b = data['IN_B'],
                 in_c = data['IN_C'],
-                out_a = data['OUT_A'],
-                out_b = data['OUT_B'],
-                out_c = data['OUT_C'],
-                out_d = data['OUT_D']
+                in_avg = data['IN_Avg'],
+                kw_a = data['kW_A'],
+                kw_b = data['kW_B'],
+                kw_c = data['kW_C'],
+                kw_tot = data['kW_tot']
             ))
-        power_box = {}
+        global power_box
+        power_box.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -148,7 +169,8 @@ def add_dl303(data):
                 dew_point = data["DewPointC"],
                 co2 = data["CO2"]
             ))
-        dl303 = {}
+        global dl303
+        dl303.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -162,7 +184,8 @@ def add_server_room(data):
                 temp = data["Temperature"],
                 humi = data["Humidity"]
             ))
-        server_room = {}
+        global server_room
+        server_room.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -175,7 +198,8 @@ def add_air_condiction(data):
                 timestamp = time(),
                 status = data["Status"]
             ))
-        air_condiction = {}
+        global air_condiction
+        air_condiction.clear()
     except Exception as e:
         print('ERROR:', e)
 
@@ -210,6 +234,8 @@ def on_message(client, userdata, msg):
         back_door["TVOC"] = data.get("TVOC")
         back_door["fan_0"] = data.get("fan_0")
         back_door["fan_1"] = data.get("fan_1")
+    elif msg.topic == "2706/IAQ/3":
+        first_meeting_room_fun["fan_0"] = data.get("fan_0")
     elif msg.topic == "2706/MeetingRoom/1":
         first_meeting_room["Temperature"] = data.get("Temperature")
         first_meeting_room["Humidity"] = data.get("Humidity")
@@ -224,20 +250,30 @@ def on_message(client, userdata, msg):
         power_box["IN_A"] = data.get("IN_A")
         power_box["IN_B"] = data.get("IN_B")
         power_box["IN_C"] = data.get("IN_C")
-        power_box["OUT_A"] = data.get("OUT_A")
-        power_box["OUT_B"] = data.get("OUT_B")
-        power_box["OUT_C"] = data.get("OUT_C")
-        power_box["OUT_D"] = data.get("OUT_D")
+        power_box["IN_Avg"] = data.get("IN_Avg")
+        power_box["kW_A"] = (data.get("IN_A") / 1.732) * 220 / 1000
+        power_box["kW_B"] = (data.get("IN_B") / 1.732) * 220 / 1000
+        power_box["kW_C"] = (data.get("IN_C") / 1.732) * 220 / 1000
+        power_box["kW_tot"] =  power_box["kW_A"] + power_box["kW_B"] + power_box["kW_C"]
     elif msg.topic == "DL303/Info":
         dl303["TemperatureC"] = data.get("TemperatureC")
         dl303["Humidity"] = data.get("Humidity")
         dl303["DewPointC"] = data.get("DewPointC")
         dl303["CO2"] = data.get("CO2")
-    elif msg.topic == "2706/AirCondiction/A":
+    elif msg.topic == "2706/Air_Condiction/A":
         server_room["Temperature"] = data.get("Temperature")
         server_room["Humidity"] = data.get("Humidity")
-    elif msg.topic == "2706/AirCondiction/A/switch":
-        air_condiction["Status"] = data.get("Status")
+    elif msg.topic == "2706/Air_Condiction/A/switch":
+        air_condiction["Status"] = True if data.get("Status") == "On" else False
+    elif msg.topic == "2706/Air_Condiction/A/control":
+        try:
+            with Session.begin() as session:
+                session.add(ACSwitchLog(
+                    timestamp = time(),
+                    status = True if data.get("Status") == "ON" else False
+                ))
+        except Exception as e:
+            print('ERROR:', e)
 
 
 if __name__ == "__main__":
@@ -245,6 +281,7 @@ if __name__ == "__main__":
                    int(os.environ.get("MQTT_PORT")))
     task.add_job(add_front_door, 'interval', seconds=10, args=[front_door])
     task.add_job(add_back_door, 'interval', seconds=10, args=[back_door])
+    task.add_job(add_first_meeting_room_fun, 'interval', seconds=10, args=[first_meeting_room_fun])
     task.add_job(add_first_meeting_room, 'interval', seconds=10, args=[first_meeting_room])
     task.add_job(add_second_meeting_room, 'interval', seconds=10, args=[second_meeting_room])
     task.add_job(add_power_box, 'interval', seconds=10, args=[power_box])
